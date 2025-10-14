@@ -1,0 +1,99 @@
+<div id="classrooms" class="content-section active">
+    <div class="search-box">
+        <input type="text" id="classroomSearch" placeholder="Search by room number, department, or floor..." onkeyup="searchClassrooms()">
+    </div>
+
+    <div class="filter-buttons">
+        <button class="filter-btn" data-dept="all" onclick="filterDept('all', this)">All Departments</button>
+        <button class="filter-btn" data-dept="CSE" onclick="filterDept('CSE', this)">CSE</button>
+        <button class="filter-btn" data-dept="EEE" onclick="filterDept('EEE', this)">EEE</button>
+        <button class="filter-btn" data-dept="BBA" onclick="filterDept('BBA', this)">BBA</button>
+        <button class="filter-btn" data-dept="Civil" onclick="filterDept('Civil', this)">Civil</button>
+    </div>
+
+    <div id="classroomList">
+        <div class="floor-section">
+            <div class="floor-header">🏢 Ground Floor</div>
+            <div class="room-grid">
+                <div class="room-card" data-dept="CSE">
+                    <div class="room-number">Room G-101</div>
+                    <div class="room-dept">Computer Science & Engineering</div>
+                    <div class="room-capacity">Capacity: 60 students</div>
+                </div>
+                <div class="room-card" data-dept="EEE">
+                    <div class="room-number">Room G-102</div>
+                    <div class="room-dept">Electrical & Electronics</div>
+                    <div class="room-capacity">Capacity: 50 students</div>
+                </div>
+                <div class="room-card" data-dept="BBA">
+                    <div class="room-number">Room G-103</div>
+                    <div class="room-dept">Business Administration</div>
+                    <div class="room-capacity">Capacity: 70 students</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="floor-section">
+            <div class="floor-header">🏢 1st Floor</div>
+            <div class="room-grid">
+                <div class="room-card" data-dept="CSE">
+                    <div class="room-number">Room 1-201</div>
+                    <div class="room-dept">Computer Science & Engineering</div>
+                    <div class="room-capacity">Capacity: 80 students</div>
+                </div>
+                <div class="room-card" data-dept="CSE">
+                    <div class="room-number">Room 1-202</div>
+                    <div class="room-dept">Computer Science & Engineering</div>
+                    <div class="room-capacity">Capacity: 60 students</div>
+                </div>
+                <div class="room-card" data-dept="EEE">
+                    <div class="room-number">Room 1-203</div>
+                    <div class="room-dept">Electrical & Electronics</div>
+                    <div class="room-capacity">Capacity: 55 students</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="floor-section">
+            <div class="floor-header">🏢 2nd Floor</div>
+            <div class="room-grid">
+                <div class="room-card" data-dept="BBA">
+                    <div class="room-number">Room 2-301</div>
+                    <div class="room-dept">Business Administration</div>
+                    <div class="room-capacity">Capacity: 90 students</div>
+                </div>
+                <div class="room-card" data-dept="Civil">
+                    <div class="room-number">Room 2-302</div>
+                    <div class="room-dept">Civil Engineering</div>
+                    <div class="room-capacity">Capacity: 65 students</div>
+                </div>
+                <div class="room-card" data-dept="Civil">
+                    <div class="room-number">Room 2-303</div>
+                    <div class="room-dept">Civil Engineering</div>
+                    <div class="room-capacity">Capacity: 70 students</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="floor-section">
+            <div class="floor-header">🏢 3rd Floor</div>
+            <div class="room-grid">
+                <div class="room-card" data-dept="CSE">
+                    <div class="room-number">Room 3-401</div>
+                    <div class="room-dept">Computer Science & Engineering</div>
+                    <div class="room-capacity">Capacity: 75 students</div>
+                </div>
+                <div class="room-card" data-dept="EEE">
+                    <div class="room-number">Room 3-402</div>
+                    <div class="room-dept">Electrical & Electronics</div>
+                    <div class="room-capacity">Capacity: 60 students</div>
+                </div>
+                <div class="room-card" data-dept="BBA">
+                    <div class="room-number">Room 3-403</div>
+                    <div class="room-dept">Business Administration</div>
+                    <div class="room-capacity">Capacity: 85 students</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

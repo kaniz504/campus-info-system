@@ -1,0 +1,76 @@
+<div id="labs" class="content-section active">
+    <div class="search-box">
+        <input type="text" id="labSearch" placeholder="Search labs by name or department..." onkeyup="searchLabs()">
+    </div>
+
+    <div class="filter-buttons">
+        <button class="filter-btn" data-status="all" onclick="filterLabStatus('all', this)">All Labs</button>
+        <button class="filter-btn" data-status="open" onclick="filterLabStatus('open', this)">Open Only</button>
+        <button class="filter-btn" data-status="closed" onclick="filterLabStatus('closed', this)">Closed Only</button>
+    </div>
+
+    <div id="labList">
+        <div class="lab-card open" data-status="open">
+            <div class="lab-header">
+                <div class="lab-name">CSE Programming Lab 1</div>
+                <div class="lab-status open">OPEN</div>
+            </div>
+            <div class="lab-info">📍 Location: 1st Floor, Room 1-105</div>
+            <div class="lab-info">💻 50 Computers | Opens: 8:00 AM - 6:00 PM</div>
+        </div>
+
+        <div class="lab-card open" data-status="open">
+            <div class="lab-header">
+                <div class="lab-name">CSE Programming Lab 2</div>
+                <div class="lab-status open">OPEN</div>
+            </div>
+            <div class="lab-info">📍 Location: 1st Floor, Room 1-106</div>
+            <div class="lab-info">💻 45 Computers | Opens: 8:00 AM - 8:00 PM</div>
+        </div>
+
+        <div class="lab-card closed" data-status="closed">
+            <div class="lab-header">
+                <div class="lab-name">EEE Circuit Lab</div>
+                <div class="lab-status closed">CLOSED</div>
+            </div>
+            <div class="lab-info">📍 Location: 2nd Floor, Room 2-205</div>
+            <div class="lab-info">⚡ 30 Workstations | Maintenance until 3:00 PM</div>
+        </div>
+
+        <div class="lab-card open" data-status="open">
+            <div class="lab-header">
+                <div class="lab-name">Physics Lab</div>
+                <div class="lab-status open">OPEN</div>
+            </div>
+            <div class="lab-info">📍 Location: Ground Floor, Room G-015</div>
+            <div class="lab-info">🔬 25 Stations | Opens: 9:00 AM - 5:00 PM</div>
+        </div>
+
+        <div class="lab-card open" data-status="open">
+            <div class="lab-header">
+                <div class="lab-name">Chemistry Lab</div>
+                <div class="lab-status open">OPEN</div>
+            </div>
+            <div class="lab-info">📍 Location: Ground Floor, Room G-016</div>
+            <div class="lab-info">🧪 30 Stations | Opens: 9:00 AM - 5:00 PM</div>
+        </div>
+
+        <div class="lab-card closed" data-status="closed">
+            <div class="lab-header">
+                <div class="lab-name">Network & Security Lab</div>
+                <div class="lab-status closed">CLOSED</div>
+            </div>
+            <div class="lab-info">📍 Location: 3rd Floor, Room 3-308</div>
+            <div class="lab-info">🌐 40 Computers | Scheduled class until 4:30 PM</div>
+        </div>
+
+        <div class="lab-card open" data-status="open">
+            <div class="lab-header">
+                <div class="lab-name">CAD Lab</div>
+                <div class="lab-status open">OPEN</div>
+            </div>
+            <div class="lab-info">📍 Location: 2nd Floor, Room 2-210</div>
+            <div class="lab-info">🖥️ 35 Computers | Opens: 8:00 AM - 6:00 PM</div>
+        </div>
+    </div>
+</div>

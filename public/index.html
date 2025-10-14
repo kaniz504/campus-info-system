@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Navigator - University Info System</title>
+    <link rel="stylesheet" href="styles.css"> 
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎓 Campus Navigator</h1>
+            <p class="tagline">Your complete guide to classrooms, labs, and campus transport</p>
+        </header>
+
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="loadTab('classrooms.html', this)">📚 Classrooms</button>
+            <button class="tab-btn" onclick="loadTab('labs.html', this)">🔬 Labs</button>
+            <button class="tab-btn" onclick="loadTab('buses.html', this)">🚌 Bus Schedule</button>
+        </div>
+
+        <div id="content-area">
+            </div>
+    </div>
+
+    <script>
+        // *** Centralized JavaScript Logic ***
+
+        // Function to load external HTML content for the tabs
+        async function loadTab(filename, button) {
+            const contentArea = document.getElementById('content-area');
+            
+            // 1. Update active tab button style
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+
+            // 2. Load content using Fetch (simulating a simple server-side include)
+            try {
+                const response = await fetch(filename);
+                if (!response.ok) throw new Error('Network response was not ok');
+                const htmlContent = await response.text();
+                contentArea.innerHTML = htmlContent;
+                
+                // 3. Re-initialize filtering for the new tab's content
+                if (filename.includes('classrooms')) {
+                    // Activate the default department filter
+                    const defaultFilter = contentArea.querySelector('#classrooms .filter-btn[data-dept="all"]');
+                    if (defaultFilter) defaultFilter.classList.add('active');
+                    currentDeptFilter = 'all';
+                    searchClassrooms();
+                } else if (filename.includes('labs')) {
+                    // Activate the default lab status filter
+                    const defaultFilter = contentArea.querySelector('#labs .filter-btn[data-status="all"]');
+                    if (defaultFilter) defaultFilter.classList.add('active');
+                    currentLabFilter = 'all';
+                    searchLabs();
+                } else if (filename.includes('buses')) {
+                    searchBuses(); // Run search to ensure all are visible
+                }
+
+            } catch (error) {
+                contentArea.innerHTML = `<div class="no-results">Error loading content: ${error.message}</div>`;
+                console.error("Error loading tab content:", error);
+            }
+        }
+        
+        let currentDeptFilter = 'all';
+        let currentLabFilter = 'all';
+
+        // Filter and Search Functions (now applied to the loaded content)
+
+        function searchClassrooms() {
+            const classroomSection = document.getElementById('classrooms');
+            if (!classroomSection) return;
+
+            const searchTerm = document.getElementById('classroomSearch').value.toLowerCase();
+            const rooms = classroomSection.querySelectorAll('.room-card');
+
+            rooms.forEach(room => {
+                const text = room.textContent.toLowerCase();
+                const deptMatch = currentDeptFilter === 'all' || room.dataset.dept === currentDeptFilter;
+                const searchMatch = text.includes(searchTerm);
+
+                room.style.display = (deptMatch && searchMatch) ? 'block' : 'none';
+            });
+
+            // Hide empty floor sections
+            classroomSection.querySelectorAll('.floor-section').forEach(floor => {
+                const visibleRooms = Array.from(floor.querySelectorAll('.room-card')).filter(room => window.getComputedStyle(room).display !== 'none');
+                floor.style.display = visibleRooms.length > 0 ? 'block' : 'none';
+            });
+        }
+
+        function filterDept(dept, button) {
+            currentDeptFilter = dept;
+
+            // Update button states within the loaded section
+            const buttons = document.querySelectorAll('#classrooms .filter-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+
+            searchClassrooms();
+        }
+
+        function searchLabs() {
+            const labSection = document.getElementById('labs');
+            if (!labSection) return;
+            
+            const searchTerm = document.getElementById('labSearch').value.toLowerCase();
+            const labs = labSection.querySelectorAll('.lab-card');
+
+            labs.forEach(lab => {
+                const text = lab.textContent.toLowerCase();
+                const statusMatch = currentLabFilter === 'all' || lab.dataset.status === currentLabFilter;
+                const searchMatch = text.includes(searchTerm);
+
+                lab.style.display = (statusMatch && searchMatch) ? 'block' : 'none';
+            });
+        }
+
+        function filterLabStatus(status, button) {
+            currentLabFilter = status;
+
+            // Update button states within the loaded section
+            const buttons = document.querySelectorAll('#labs .filter-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+
+            searchLabs();
+        }
+
+        function searchBuses() {
+            const busSection = document.getElementById('buses');
+            if (!busSection) return;
+            
+            const searchTerm = document.getElementById('busSearch').value.toLowerCase();
+            const buses = busSection.querySelectorAll('.bus-card');
+
+            buses.forEach(bus => {
+                const text = bus.textContent.toLowerCase();
+                bus.style.display = text.includes(searchTerm) ? 'block' : 'none';
+            });
+        }
+        
+        // Load the default tab on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            const defaultButton = document.querySelector('.tab-btn.active');
+            if (defaultButton) {
+                // Pass the filename (which is the first button's onclick argument) and the button element itself
+                loadTab('classrooms.html', defaultButton); 
+            }
+        });
+    </script>
+</body>
+</html>
