@@ -4,12 +4,42 @@
     box-sizing: border-box;
 }
 
+/* ---------------------------------------------------------------------- */
+/* *** CONSOLIDATED BODY STYLES *** */
+/* This block now handles the full background image and essential body layout. */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     min-height: 100vh;
     padding: 20px;
+    
+    /* BACKGROUND IMAGE: Will cover the viewport. */
+    background: url(images/tree.jpeg) no-repeat center center fixed;
+    background-size: cover;
+    
+    /* FALLBACK: Used only if the image fails to load. */
+    background-color: #667eea; 
 }
+/* ---------------------------------------------------------------------- */
+/* logo*/
+.header-logo {
+    /* Adjust these values to match your logo size */
+    height: 50px; 
+    width: auto; 
+    
+    /* Vertically align the image with the text */
+    vertical-align: middle; 
+    
+    /* Add some spacing between the logo and the text */
+    margin-right: 15px; 
+}
+
+/* Optional: Center the text in the header */
+header h1 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 
 .container {
     max-width: 1200px;
@@ -17,7 +47,8 @@ body {
 }
 
 header {
-    background: white;
+    /* The white background here allows the content to be readable over the body image */
+    background: white; 
     padding: 30px;
     border-radius: 15px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.2);
