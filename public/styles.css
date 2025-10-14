@@ -4,22 +4,16 @@
     box-sizing: border-box;
 }
 
-/* ---------------------------------------------------------------------- */
-/* *** CONSOLIDATED BODY STYLES *** */
-/* This block now handles the full background image and essential body layout. */
+/*  background image  */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     min-height: 100vh;
     padding: 20px;
-    
-    /* BACKGROUND IMAGE: Will cover the viewport. */
     background: url(images/tree.jpeg) no-repeat center center fixed;
     background-size: cover;
-    
-    /* FALLBACK: Used only if the image fails to load. */
     background-color: #667eea; 
 }
-/* ---------------------------------------------------------------------- */
+
 /* logo*/
 .header-logo {
     /* Adjust these values to match your logo size */
@@ -98,7 +92,7 @@ h1 {
 }
 
 .tab-btn.active {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #545456 0%, #1b1a1d 100%);
     color: white;
     box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
 }
@@ -145,7 +139,7 @@ h1 {
 }
 
 .floor-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #6a6a6b 0%, #1b1a1d 100%);
     color: white;
     padding: 15px 20px;
     border-radius: 10px;
@@ -249,7 +243,7 @@ h1 {
 }
 
 .bus-card {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #a86969 0%, #ac1724 100%);
     color: white;
     padding: 25px;
     border-radius: 15px;
