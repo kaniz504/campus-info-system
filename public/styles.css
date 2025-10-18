@@ -321,6 +321,250 @@ h1 {
     font-size: 1.1em;
 }
 
+/* Admin Controls and Action Buttons */
+.admin-controls {
+    margin: 20px 0;
+    text-align: center;
+}
+
+.admin-btn, .refresh-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin: 0 5px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.admin-btn:hover, .refresh-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.room-actions, .bus-actions {
+    margin-top: 10px;
+    text-align: center;
+}
+
+.edit-btn, .delete-btn, .status-toggle-btn {
+    background: none;
+    border: 1px solid #ddd;
+    padding: 5px 10px;
+    margin: 0 3px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.2s ease;
+}
+
+.edit-btn {
+    color: #4CAF50;
+    border-color: #4CAF50;
+}
+
+.edit-btn:hover {
+    background: #4CAF50;
+    color: white;
+}
+
+.delete-btn {
+    color: #f44336;
+    border-color: #f44336;
+}
+
+.delete-btn:hover {
+    background: #f44336;
+    color: white;
+}
+
+.status-toggle-btn {
+    color: #2196F3;
+    border-color: #2196F3;
+    margin-left: 10px;
+}
+
+.status-toggle-btn:hover {
+    background: #2196F3;
+    color: white;
+}
+
+/* Loading and Error States */
+.loading {
+    text-align: center;
+    padding: 50px;
+    font-size: 18px;
+    color: #666;
+}
+
+.error {
+    text-align: center;
+    padding: 50px;
+    font-size: 18px;
+    color: #f44336;
+    background: #ffebee;
+    border-radius: 10px;
+    margin: 20px 0;
+}
+
+/* Enhanced Lab Status Indicators */
+.lab-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.lab-status.open {
+    background: #4CAF50;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.lab-status.closed {
+    background: #f44336;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* Enhanced Bus Card Layout */
+.bus-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+/* Authentication Styles */
+.auth-container {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 20px;
+    border-radius: 10px;
+    margin: 20px 0;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.auth-toggle-btn {
+    background: #f0f0f0;
+    border: none;
+    padding: 10px 20px;
+    margin: 0 5px 20px 0;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.auth-toggle-btn.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.auth-form {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.auth-form h3 {
+    margin-bottom: 20px;
+    color: #333;
+    text-align: center;
+}
+
+.auth-form input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+.auth-form input:focus {
+    border-color: #667eea;
+    outline: none;
+}
+
+.auth-form button {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all 0.3s ease;
+}
+
+.auth-form button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.auth-note {
+    margin-top: 15px;
+    padding: 10px;
+    background: #e3f2fd;
+    border-radius: 5px;
+    font-size: 14px;
+    color: #1976d2;
+    text-align: center;
+}
+
+.user-info {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 15px 20px;
+    border-radius: 10px;
+    margin: 20px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.welcome-message {
+    font-weight: bold;
+    color: #333;
+}
+
+.user-role {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.signout-btn {
+    background: #f44336;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.signout-btn:hover {
+    background: #d32f2f;
+    transform: translateY(-1px);
+}
+
 @media (max-width: 768px) {
     h1 {
         font-size: 1.8em;
@@ -334,5 +578,46 @@ h1 {
 
     .room-grid {
         grid-template-columns: 1fr;
+    }
+
+    .admin-controls {
+        text-align: center;
+    }
+    
+    .admin-btn, .refresh-btn {
+        display: block;
+        width: 100%;
+        margin: 5px 0;
+    }
+    
+    .room-actions, .bus-actions {
+        display: flex;
+        justify-content: center;
+        gap: 5px;
+        flex-wrap: wrap;
+    }
+    
+    .lab-header, .bus-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .status-toggle-btn {
+        margin-left: 0;
+        margin-top: 5px;
+    }
+
+    .auth-container {
+        padding: 15px;
+    }
+    
+    .user-info {
+        flex-direction: column;
+        text-align: center;
+        gap: 15px;
+    }
+    
+    .auth-form {
+        max-width: 100%;
     }
 }
