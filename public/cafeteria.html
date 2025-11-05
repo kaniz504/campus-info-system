@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cafeteria - Campus Navigator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>
+                <img src="images/logo.png" alt="University Logo" class="header-logo">
+                Campus Navigator
+            </h1>
+            <p class="tagline">Your complete guide to classrooms, labs, and campus transport</p>
+        </header>
+
+        <div class="modern-cafeteria">
+            <!-- Cafeteria Header -->
+            <div class="cafeteria-title">
+                <h2>
+                    🍽️ Campus Cafeteria
+                </h2>
+                <div class="cafeteria-contact-info" id="contactInfo">
+                    <div class="contact-item">
+                        <span>📍</span>
+                        <span><strong>Location:</strong> <span id="location">Loading...</span></span>
+                    </div>
+                    <div class="contact-item">
+                        <span>🕒</span>
+                        <span><strong>Hours:</strong> <span id="hours">Loading...</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filter Row -->
+            <div class="filter-row">
+                <div class="filter-group-modern">
+                    <h4>Category:</h4>
+                    <div class="filter-pills" id="categoryFilters">
+                        <button class="filter-pill active" data-category="all">All Categories</button>
+                        <button class="filter-pill" data-category="food">🍽️ Food</button>
+                        <button class="filter-pill" data-category="snacks">🍿 Snacks</button>
+                        <button class="filter-pill" data-category="drinks">🥤 Drinks</button>
+                    </div>
+                </div>
+                
+                <div class="filter-group-modern">
+                    <h4>Availability:</h4>
+                    <div class="filter-pills" id="availabilityFilters">
+                        <button class="filter-pill active" data-availability="all">All Items</button>
+                        <button class="filter-pill" data-availability="available">✅ Available</button>
+                        <button class="filter-pill" data-availability="limited">⚠️ Limited</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Menu Items Grid -->
+            <div class="modern-menu-grid" id="menuList">
+                <p style="text-align: center; padding: 40px; color: #666;">Loading menu items...</p>
+            </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3000/api';
+        let menuItems = [];
+        let activeCategory = 'all';
+        let activeAvailability = 'all';
+
+        // Function to get category icon
+        function getCategoryIcon(category) {
+            const icons = {
+                'food': '🍽️',
+                'snacks': '🍿',
+                'drinks': '🥤'
+            };
+            return icons[category] || '🍽️';
+        }
+
+        // Load cafeteria data from API
+        async function loadCafeteriaData() {
+            try {
+                const [menuResponse, infoResponse] = await Promise.all([
+                    fetch(`${API_BASE}/cafeteria/menu`),
+                    fetch(`${API_BASE}/cafeteria/info`)
+                ]);
+
+                if (!menuResponse.ok || !infoResponse.ok) {
+                    throw new Error('Failed to load cafeteria data');
+                }
+
+                menuItems = await menuResponse.json();
+                const cafeteriaInfo = await infoResponse.json();
+
+                // Update cafeteria info
+                document.getElementById('location').textContent = cafeteriaInfo.location;
+                document.getElementById('hours').textContent = cafeteriaInfo.hours;
+
+                // Render menu items
+                renderMenuItems();
+
+                // Setup filters
+                setupFilters();
+            } catch (error) {
+                console.error('Error loading cafeteria data:', error);
+                document.getElementById('menuList').innerHTML = 
+                    '<p style="text-align: center; padding: 40px; color: #e74c3c;">Error loading menu items. Please try again later.</p>';
+            }
+        }
+
+        // Render menu items
+        function renderMenuItems() {
+            const menuList = document.getElementById('menuList');
+            
+            const filteredItems = menuItems.filter(item => {
+                const matchesCategory = activeCategory === 'all' || item.category === activeCategory;
+                const matchesAvailability = activeAvailability === 'all' || item.availability === activeAvailability;
+                return matchesCategory && matchesAvailability;
+            });
+
+            if (filteredItems.length === 0) {
+                menuList.innerHTML = '<p style="text-align: center; padding: 40px; color: #666;">No menu items found matching your criteria.</p>';
+                return;
+            }
+
+            menuList.innerHTML = filteredItems.map(item => `
+                <div class="modern-menu-card ${item.category} ${item.availability}" data-category="${item.category}" data-availability="${item.availability}">
+                    <div class="menu-card-header">
+                        <div class="menu-item-title">
+                            <span class="menu-item-icon">${getCategoryIcon(item.category)}</span>
+                            <span>${item.name}</span>
+                        </div>
+                        <div class="menu-item-price">৳${item.price}</div>
+                    </div>
+                    <div class="menu-item-desc">${item.description}</div>
+                    <span class="menu-item-status ${item.availability}">
+                        ${item.availability === 'available' ? '✅ Available' : '⚠️ Limited'}
+                    </span>
+                </div>
+            `).join('');
+        }
+
+        // Setup filter buttons
+        function setupFilters() {
+            const categoryPills = document.querySelectorAll('.filter-pill[data-category]');
+            const availabilityPills = document.querySelectorAll('.filter-pill[data-availability]');
+
+            // Category filter
+            categoryPills.forEach(pill => {
+                pill.addEventListener('click', function() {
+                    categoryPills.forEach(p => p.classList.remove('active'));
+                    this.classList.add('active');
+                    activeCategory = this.getAttribute('data-category');
+                    renderMenuItems();
+                });
+            });
+
+            // Availability filter
+            availabilityPills.forEach(pill => {
+                pill.addEventListener('click', function() {
+                    availabilityPills.forEach(p => p.classList.remove('active'));
+                    this.classList.add('active');
+                    activeAvailability = this.getAttribute('data-availability');
+                    renderMenuItems();
+                });
+            });
+        }
+
+        // Load data when page loads
+        document.addEventListener('DOMContentLoaded', loadCafeteriaData);
+    </script>
+</body>
+</html>

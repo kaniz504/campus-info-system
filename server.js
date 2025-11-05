@@ -302,6 +302,157 @@ app.delete('/api/buses/:id', authenticateToken, requireAdmin, async (req, res) =
     }
 });
 
+// Cafeteria API Routes
+
+// Get all menu items (accessible to all authenticated users)
+app.get('/api/cafeteria/menu', authenticateToken, async (req, res) => {
+    try {
+        const { category, availability, search } = req.query;
+        const menuItems = await db.getAllMenuItems({ category, availability, search });
+        res.json(menuItems);
+    } catch (error) {
+        console.error('Error fetching menu items:', error);
+        res.status(500).json({ error: 'Failed to fetch menu items' });
+    }
+});
+
+// Get menu item by ID (accessible to all authenticated users)
+app.get('/api/cafeteria/menu/:id', authenticateToken, async (req, res) => {
+    try {
+        const menuItem = await db.getMenuItemById(req.params.id);
+        if (menuItem) {
+            res.json(menuItem);
+        } else {
+            res.status(404).json({ error: 'Menu item not found' });
+        }
+    } catch (error) {
+        console.error('Error fetching menu item:', error);
+        res.status(500).json({ error: 'Failed to fetch menu item' });
+    }
+});
+
+// Add new menu item (admin only)
+app.post('/api/cafeteria/menu', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const newItem = await db.createMenuItem(req.body);
+        res.status(201).json(newItem);
+    } catch (error) {
+        console.error('Error creating menu item:', error);
+        if (error.code === 'SQLITE_CONSTRAINT_UNIQUE') {
+            res.status(400).json({ error: 'Menu item already exists' });
+        } else {
+            res.status(500).json({ error: 'Failed to create menu item' });
+        }
+    }
+});
+
+// Update menu item (admin only)
+app.put('/api/cafeteria/menu/:id', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const updatedItem = await db.updateMenuItem(req.params.id, req.body);
+        res.json(updatedItem);
+    } catch (error) {
+        console.error('Error updating menu item:', error);
+        res.status(500).json({ error: 'Failed to update menu item' });
+    }
+});
+
+// Delete menu item (admin only)
+app.delete('/api/cafeteria/menu/:id', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const result = await db.deleteMenuItem(req.params.id);
+        res.json(result);
+    } catch (error) {
+        console.error('Error deleting menu item:', error);
+        res.status(500).json({ error: 'Failed to delete menu item' });
+    }
+});
+
+// Get cafeteria info (accessible to all authenticated users)
+app.get('/api/cafeteria/info', authenticateToken, async (req, res) => {
+    try {
+        const cafeteriaInfo = await db.getCafeteriaInfo();
+        res.json(cafeteriaInfo);
+    } catch (error) {
+        console.error('Error fetching cafeteria info:', error);
+        res.status(500).json({ error: 'Failed to fetch cafeteria info' });
+    }
+});
+
+// Update cafeteria info (admin only)
+app.put('/api/cafeteria/info', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const updatedInfo = await db.updateCafeteriaInfo(req.body);
+        res.json(updatedInfo);
+    } catch (error) {
+        console.error('Error updating cafeteria info:', error);
+        res.status(500).json({ error: 'Failed to update cafeteria info' });
+    }
+});
+
+// Schedule Routes
+
+// Get schedules for a specific resource
+app.get('/api/schedules/:type/:id', authenticateToken, async (req, res) => {
+    try {
+        const { day } = req.query;
+        const schedules = await db.getSchedulesByResource(req.params.type, req.params.id, day);
+        res.json(schedules);
+    } catch (error) {
+        console.error('Error fetching schedules:', error);
+        res.status(500).json({ error: 'Failed to fetch schedules' });
+    }
+});
+
+// Create a new schedule entry (admin only)
+app.post('/api/schedules', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const { resource_type, resource_id, day_of_week, start_time, end_time, subject, instructor, course_code } = req.body;
+
+        if (!resource_type || !resource_id || !day_of_week || !start_time || !end_time || !subject) {
+            return res.status(400).json({ error: 'Required fields: resource_type, resource_id, day_of_week, start_time, end_time, subject' });
+        }
+
+        const schedule = await db.createSchedule({
+            resource_type,
+            resource_id,
+            day_of_week,
+            start_time,
+            end_time,
+            subject,
+            instructor,
+            course_code
+        });
+
+        res.status(201).json(schedule);
+    } catch (error) {
+        console.error('Error creating schedule:', error);
+        res.status(500).json({ error: 'Failed to create schedule' });
+    }
+});
+
+// Update a schedule entry (admin only)
+app.put('/api/schedules/:id', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const updated = await db.updateSchedule(req.params.id, req.body);
+        res.json(updated);
+    } catch (error) {
+        console.error('Error updating schedule:', error);
+        res.status(500).json({ error: error.message || 'Failed to update schedule' });
+    }
+});
+
+// Delete a schedule entry (admin only)
+app.delete('/api/schedules/:id', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const result = await db.deleteSchedule(req.params.id);
+        res.json({ message: 'Schedule deleted successfully', ...result });
+    } catch (error) {
+        console.error('Error deleting schedule:', error);
+        res.status(500).json({ error: 'Failed to delete schedule' });
+    }
+});
+
 // Health check
 app.get('/api/health', (req, res) => {
     res.json({ status: 'OK', message: 'Campus Info API is running with SQLite database' });
