@@ -13,6 +13,12 @@ const db = new Database();
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// Redirect root to homepage (must be before static middleware)
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/public/home.html');
+});
+
 app.use(express.static('public')); // Serve frontend files
 
 // Initialize database on startup
@@ -450,6 +456,124 @@ app.delete('/api/schedules/:id', authenticateToken, requireAdmin, async (req, re
     } catch (error) {
         console.error('Error deleting schedule:', error);
         res.status(500).json({ error: 'Failed to delete schedule' });
+    }
+});
+
+// Booking Request Routes
+
+// Create a new booking request (all authenticated users)
+app.post('/api/booking-requests', authenticateToken, async (req, res) => {
+    try {
+        const { resource_type, resource_id, date, start_time, end_time, program_name, description, participant_count } = req.body;
+
+        if (!resource_type || !resource_id || !date || !start_time || !end_time || !program_name) {
+            return res.status(400).json({ error: 'Required fields: resource_type, resource_id, date, start_time, end_time, program_name' });
+        }
+
+        const bookingRequest = await db.createBookingRequest({
+            user_id: req.user.id,
+            resource_type,
+            resource_id,
+            date,
+            start_time,
+            end_time,
+            program_name,
+            description,
+            participant_count
+        });
+
+        res.status(201).json(bookingRequest);
+    } catch (error) {
+        console.error('Error creating booking request:', error);
+        res.status(500).json({ error: 'Failed to create booking request' });
+    }
+});
+
+// Get all booking requests (admin sees all, users see only their own)
+app.get('/api/booking-requests', authenticateToken, async (req, res) => {
+    try {
+        const { status, resource_type, resource_id } = req.query;
+        const filters = { status, resource_type };
+        
+        if (resource_id) {
+            filters.resource_id = parseInt(resource_id);
+        }
+        
+        // If not admin, only show user's own requests (unless viewing approved bookings for a resource)
+        if (req.user.role !== 'admin' && status !== 'approved') {
+            filters.user_id = req.user.id;
+        }
+
+        const bookingRequests = await db.getAllBookingRequests(filters);
+        res.json(bookingRequests);
+    } catch (error) {
+        console.error('Error fetching booking requests:', error);
+        res.status(500).json({ error: 'Failed to fetch booking requests' });
+    }
+});
+
+// Get booking request by ID
+app.get('/api/booking-requests/:id', authenticateToken, async (req, res) => {
+    try {
+        const bookingRequest = await db.getBookingRequestById(req.params.id);
+        
+        if (!bookingRequest) {
+            return res.status(404).json({ error: 'Booking request not found' });
+        }
+
+        // Users can only view their own requests, admins can view all
+        if (req.user.role !== 'admin' && bookingRequest.user_id !== req.user.id) {
+            return res.status(403).json({ error: 'Access denied' });
+        }
+
+        res.json(bookingRequest);
+    } catch (error) {
+        console.error('Error fetching booking request:', error);
+        res.status(500).json({ error: 'Failed to fetch booking request' });
+    }
+});
+
+// Update booking request status (admin only)
+app.patch('/api/booking-requests/:id/status', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const { status, admin_notes } = req.body;
+
+        if (!status || !['approved', 'rejected'].includes(status)) {
+            return res.status(400).json({ error: 'Status must be either "approved" or "rejected"' });
+        }
+
+        const result = await db.updateBookingRequestStatus(req.params.id, status, req.user.id, admin_notes);
+        res.json(result);
+    } catch (error) {
+        console.error('Error updating booking request status:', error);
+        res.status(500).json({ error: 'Failed to update booking request status' });
+    }
+});
+
+// Delete booking request (user can delete their own pending requests, admin can delete any)
+app.delete('/api/booking-requests/:id', authenticateToken, async (req, res) => {
+    try {
+        const bookingRequest = await db.getBookingRequestById(req.params.id);
+        
+        if (!bookingRequest) {
+            return res.status(404).json({ error: 'Booking request not found' });
+        }
+
+        // Users can only delete their own pending requests
+        if (req.user.role !== 'admin') {
+            if (bookingRequest.user_id !== req.user.id) {
+                return res.status(403).json({ error: 'Access denied' });
+            }
+            if (bookingRequest.status !== 'pending') {
+                return res.status(400).json({ error: 'Can only delete pending requests' });
+            }
+        }
+
+        const result = await db.deleteBookingRequest(req.params.id);
+        res.json({ message: 'Booking request deleted successfully', ...result });
+    } catch (error) {
+        console.error('Error deleting booking request:', error);
+        res.status(500).json({ error: 'Failed to delete booking request' });
     }
 });
 

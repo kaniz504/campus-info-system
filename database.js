@@ -121,6 +121,28 @@ class Database {
                     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
                 );
 
+                -- Booking requests table for special programs
+                CREATE TABLE IF NOT EXISTS booking_requests (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    user_id INTEGER NOT NULL,
+                    resource_type TEXT NOT NULL, -- 'classroom' or 'lab'
+                    resource_id INTEGER NOT NULL,
+                    date DATE NOT NULL,
+                    start_time TIME NOT NULL,
+                    end_time TIME NOT NULL,
+                    program_name TEXT NOT NULL,
+                    description TEXT,
+                    participant_count INTEGER,
+                    status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected')),
+                    admin_notes TEXT,
+                    reviewed_by INTEGER,
+                    reviewed_at DATETIME,
+                    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (user_id) REFERENCES users (id),
+                    FOREIGN KEY (reviewed_by) REFERENCES users (id)
+                );
+
                 -- Create indexes for better performance
                 CREATE INDEX IF NOT EXISTS idx_users_student_id ON users (student_id);
                 CREATE INDEX IF NOT EXISTS idx_users_role ON users (role);
@@ -134,6 +156,10 @@ class Database {
                 CREATE INDEX IF NOT EXISTS idx_cafeteria_menu_availability ON cafeteria_menu (availability);
                 CREATE INDEX IF NOT EXISTS idx_schedules_resource ON schedules (resource_type, resource_id);
                 CREATE INDEX IF NOT EXISTS idx_schedules_day ON schedules (day_of_week);
+                CREATE INDEX IF NOT EXISTS idx_booking_requests_user ON booking_requests (user_id);
+                CREATE INDEX IF NOT EXISTS idx_booking_requests_resource ON booking_requests (resource_type, resource_id);
+                CREATE INDEX IF NOT EXISTS idx_booking_requests_status ON booking_requests (status);
+                CREATE INDEX IF NOT EXISTS idx_booking_requests_date ON booking_requests (date);
             `;
 
             this.db.exec(createTablesSQL, (err) => {
@@ -830,6 +856,126 @@ class Database {
         return new Promise((resolve, reject) => {
             const sql = `DELETE FROM schedules WHERE id = ?`;
             this.db.run(sql, [scheduleId], function(err) {
+                if (err) reject(err);
+                else resolve({ deleted: this.changes });
+            });
+        });
+    }
+
+    // Booking Request Methods
+    createBookingRequest(bookingData) {
+        return new Promise((resolve, reject) => {
+            const sql = `INSERT INTO booking_requests 
+                        (user_id, resource_type, resource_id, date, start_time, end_time, program_name, description, participant_count) 
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+            this.db.run(sql, [
+                bookingData.user_id,
+                bookingData.resource_type,
+                bookingData.resource_id,
+                bookingData.date,
+                bookingData.start_time,
+                bookingData.end_time,
+                bookingData.program_name,
+                bookingData.description || null,
+                bookingData.participant_count || null
+            ], function(err) {
+                if (err) reject(err);
+                else resolve({ id: this.lastID, ...bookingData, status: 'pending' });
+            });
+        });
+    }
+
+    getAllBookingRequests(filters = {}) {
+        return new Promise((resolve, reject) => {
+            let sql = `
+                SELECT br.*, 
+                       u.name as requester_name, 
+                       u.student_id as requester_student_id,
+                       CASE 
+                           WHEN br.resource_type = 'classroom' THEN c.room
+                           WHEN br.resource_type = 'lab' THEN l.name
+                       END as resource_name
+                FROM booking_requests br
+                JOIN users u ON br.user_id = u.id
+                LEFT JOIN classrooms c ON br.resource_type = 'classroom' AND br.resource_id = c.id
+                LEFT JOIN labs l ON br.resource_type = 'lab' AND br.resource_id = l.id
+            `;
+            const params = [];
+            const conditions = [];
+
+            if (filters.status && filters.status !== 'all') {
+                conditions.push('br.status = ?');
+                params.push(filters.status);
+            }
+
+            if (filters.user_id) {
+                conditions.push('br.user_id = ?');
+                params.push(filters.user_id);
+            }
+
+            if (filters.resource_type) {
+                conditions.push('br.resource_type = ?');
+                params.push(filters.resource_type);
+            }
+
+            if (filters.resource_id) {
+                conditions.push('br.resource_id = ?');
+                params.push(filters.resource_id);
+            }
+
+            if (conditions.length > 0) {
+                sql += ' WHERE ' + conditions.join(' AND ');
+            }
+
+            sql += ' ORDER BY br.created_at DESC';
+
+            this.db.all(sql, params, (err, rows) => {
+                if (err) reject(err);
+                else resolve(rows);
+            });
+        });
+    }
+
+    getBookingRequestById(id) {
+        return new Promise((resolve, reject) => {
+            const sql = `
+                SELECT br.*, 
+                       u.name as requester_name, 
+                       u.student_id as requester_student_id,
+                       CASE 
+                           WHEN br.resource_type = 'classroom' THEN c.room
+                           WHEN br.resource_type = 'lab' THEN l.name
+                       END as resource_name
+                FROM booking_requests br
+                JOIN users u ON br.user_id = u.id
+                LEFT JOIN classrooms c ON br.resource_type = 'classroom' AND br.resource_id = c.id
+                LEFT JOIN labs l ON br.resource_type = 'lab' AND br.resource_id = l.id
+                WHERE br.id = ?
+            `;
+            this.db.get(sql, [id], (err, row) => {
+                if (err) reject(err);
+                else resolve(row);
+            });
+        });
+    }
+
+    updateBookingRequestStatus(id, status, adminId, adminNotes = null) {
+        return new Promise((resolve, reject) => {
+            const sql = `UPDATE booking_requests 
+                        SET status = ?, reviewed_by = ?, reviewed_at = CURRENT_TIMESTAMP, 
+                            admin_notes = ?, updated_at = CURRENT_TIMESTAMP 
+                        WHERE id = ?`;
+            this.db.run(sql, [status, adminId, adminNotes, id], function(err) {
+                if (err) reject(err);
+                else resolve({ id: id, status: status, changes: this.changes });
+            });
+        });
+    }
+
+    deleteBookingRequest(id) {
+        return new Promise((resolve, reject) => {
+            const sql = `DELETE FROM booking_requests WHERE id = ?`;
+            this.db.run(sql, [id], function(err) {
                 if (err) reject(err);
                 else resolve({ deleted: this.changes });
             });
